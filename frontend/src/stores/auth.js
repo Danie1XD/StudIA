@@ -16,7 +16,7 @@ export const useAuthStore = defineStore('auth', {
         
         // Guardamos el token y el usuario en Pinia
         this.token = response.data.token
-        this.user = response.data.user
+        this.user = response.data.usuario
         
         // Guardamos el token en el almacenamiento del navegador para que no se pierda al recargar
         localStorage.setItem('token', this.token)

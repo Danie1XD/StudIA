@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
+import { useAuthStore } from '../stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,19 +10,29 @@ const router = createRouter({
       path: '/',
       name: 'login',
       component: LoginView,
-      // Si ya tiene sesión abierta y quiere ir al login, lo mandamos al dashboard
       meta: { requiresGuest: true }
     },
     {
       path: '/dashboard',
       component: DashboardView,
-      // Esta meta indica que esta sección requiere estar logueado
       meta: { requiresAuth: true },
       children: [
         {
           path: 'inicio',
           name: 'inicio',
           component: () => import('../views/Dashboard/InicioView.vue')
+        },
+        {
+          path: 'docente',
+          name: 'docente-inicio',
+          component: () => import('../views/Dashboard/DocenteInicioView.vue'),
+          meta: { role: 'docente' }
+        },
+        {
+          path: 'alumno',
+          name: 'alumno-inicio',
+          component: () => import('../views/Dashboard/AlumnoInicioView.vue'),
+          meta: { role: 'alumno' }
         },
         {
           path: 'materias', 
@@ -41,7 +52,8 @@ const router = createRouter({
         {
           path: 'evaluacion-ia',
           name: 'evaluacion-ia',
-          component: () => import('../views/Dashboard/EvaluacionIAView.vue')
+          component: () => import('../views/Dashboard/EvaluacionIAView.vue'),
+          meta: { role: 'docente' }
         },
         {
           path: 'perfil',
@@ -53,20 +65,26 @@ const router = createRouter({
   ]
 })
 
-// --- EL GUARDIA DE SEGURIDAD ---
+// --- GUARDIA DE SEGURIDAD Y ROLES ---
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
+  const authStore = useAuthStore()
 
-  // Si la ruta pide autenticación y NO hay token, lo mandamos al Login
   if (to.meta.requiresAuth && !token) {
     next({ name: 'login' })
-  } 
-  // Si es una ruta para invitados (como el login) y YA tiene token, lo mandamos al inicio
-  else if (to.meta.requiresGuest && token) {
-    next({ name: 'inicio' })
-  } 
-  else {
-    next() // Todo bien, que pase
+  } else if (to.meta.requiresGuest && token) {
+    // Si ya está logueado y va al login, lo redirigimos según su rol actual
+    const rol = authStore.user?.rol
+    if (rol === 'docente') next({ name: 'docente-inicio' })
+    else if (rol === 'alumno') next({ name: 'alumno-inicio' })
+    else next({ name: 'inicio' })
+  } else if (to.meta.role && authStore.user?.rol !== to.meta.role) {
+    // Si intenta entrar a una sección que no le corresponde por rol, lo rebotamos a su inicio
+    const rol = authStore.user?.rol
+    if (rol === 'docente') next({ name: 'docente-inicio' })
+    else next({ name: 'alumno-inicio' })
+  } else {
+    next()
   }
 })
 

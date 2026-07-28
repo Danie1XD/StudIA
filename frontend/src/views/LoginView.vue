@@ -83,20 +83,26 @@ import { useAuthStore } from '../stores/auth'
 const router = useRouter()
 const authStore = useAuthStore()
 
-// Variables reactivas conectadas a tus inputs mediante v-model
 const email = ref('')
 const password = ref('')
 const errorMsg = ref('')
 
 const iniciarSesion = async () => {
-  errorMsg.value = '' // Limpiar errores previos
+  errorMsg.value = '' 
   
-  // Llamamos a la función de Pinia que se comunica con Laravel
   const exito = await authStore.login(email.value, password.value)
   
   if (exito) {
-    // Si el backend valida el token, mandamos al alumno al Dashboard
-    router.push('/dashboard/inicio')
+    const rol = authStore.user?.rol
+
+    // Redirección condicionada según el rol del usuario autenticado
+    if (rol === 'docente') {
+      router.push({ name: 'docente-inicio' })
+    } else if (rol === 'alumno') {
+      router.push({ name: 'alumno-inicio' })
+    } else {
+      router.push({ name: 'inicio' })
+    }
   } else {
     errorMsg.value = 'Correo o contraseña incorrectos.'
   }

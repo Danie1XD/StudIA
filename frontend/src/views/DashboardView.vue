@@ -16,7 +16,8 @@
       <!-- Menú de Navegación -->
       <nav class="flex-1 px-4 space-y-2 mt-4">
         
-        <RouterLink to="/dashboard/inicio" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" active-class="text-white bg-white/10 border-l-2 border-studia-purple">
+        <!-- Enlace de inicio dinámico según el rol -->
+        <RouterLink :to="inicioRuta" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" active-class="text-white bg-white/10 border-l-2 border-studia-purple">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
           Inicio
         </RouterLink>
@@ -28,11 +29,11 @@
 
         <RouterLink to="/dashboard/tareas" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" active-class="text-studia-light bg-studia-purple/20 border-l-2 border-studia-purple">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-          {{ usuario.rol === 'docente' ? 'Gestión de Tareas' : 'Tareas pendientes' }}
+          {{ authStore.user?.rol === 'docente' ? 'Gestión de Tareas' : 'Tareas pendientes' }}
         </RouterLink>
 
-        <!-- AQUÍ ESTÁ EL TRUCO: v-if para que solo el Docente vea la Inteligencia Artificial -->
-        <RouterLink v-if="usuario.rol === 'docente'" to="/dashboard/evaluacion-ia" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" active-class="text-white bg-white/10 border-l-2 border-studia-purple">
+        <!-- Módulo exclusivo de Inteligencia Artificial para Docentes -->
+        <RouterLink v-if="authStore.user?.rol === 'docente'" to="/dashboard/evaluacion-ia" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" active-class="text-white bg-white/10 border-l-2 border-studia-purple">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
           Evaluación IA
         </RouterLink>
@@ -48,17 +49,17 @@
       <div class="p-4 border-t border-gray-800 flex items-center justify-between">
         <div class="flex items-center gap-3 overflow-hidden">
           <div class="w-8 h-8 rounded-full bg-studia-purple flex items-center justify-center text-sm font-bold text-white shrink-0">
-            <!-- Muestra la primera letra de tu nombre real -->
-            {{ usuario.nombre ? usuario.nombre.charAt(0).toUpperCase() : 'U' }}
+            <!-- Muestra la primera letra del nombre real -->
+            {{ authStore.user?.name ? authStore.user.name.charAt(0).toUpperCase() : 'U' }}
           </div>
           <div class="text-xs truncate">
-            <p class="font-bold text-white truncate">{{ usuario.nombre || 'Usuario StudIA' }}</p>
-            <p class="text-gray-500 capitalize">{{ usuario.rol || 'estudiante' }}</p>
+            <p class="font-bold text-white truncate">{{ authStore.user?.name || 'Usuario StudIA' }}</p>
+            <p class="text-gray-500 capitalize">{{ authStore.user?.rol || 'estudiante' }}</p>
           </div>
         </div>
 
         <!-- Botón para Cerrar Sesión -->
-        <button @click="cerrarSesion" title="Cerrar Sesión" class="p-2 text-gray-400 hover:text-red-400 hover:bg-white/5 rounded-lg transition-colors shrink-0">
+        <button @click="cerrarSesion" title="Cerrar Sesión" class="p-2 text-gray-400 hover:text-red-400 hover:bg-white/5 rounded-lg transition-colors shrink-0 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
@@ -75,46 +76,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
-import axios from 'axios'
+import { useAuthStore } from '../stores/auth'
+import api from '../api/axios'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
-// Estado reactivo del usuario
-const usuario = ref({
-  nombre: '',
-  rol: ''
+// Ruta de inicio dinámica basada en el rol actual del usuario en Pinia
+const inicioRuta = computed(() => {
+  const rol = authStore.user?.rol
+  if (rol === 'docente') return '/dashboard/docente'
+  if (rol === 'alumno') return '/dashboard/alumno'
+  return '/dashboard/inicio'
 })
 
-// Al cargar la pantalla, leemos quién inició sesión en el Local Storage
-onMounted(() => {
-  const userGuardado = localStorage.getItem('usuario') || localStorage.getItem('user')
-  if (userGuardado) {
-    try {
-      usuario.value = JSON.parse(userGuardado)
-    } catch (error) {
-      console.error('No se pudo leer la información del usuario:', error)
-    }
-  }
-})
-
-// Función real para cerrar sesión y salir del sistema
+// Función para cerrar sesión usando la instancia de Axios configurada
 const cerrarSesion = async () => {
   try {
-    const token = localStorage.getItem('token')
-    if (token) {
-      await axios.post('http://localhost:8000/api/logout', {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-    }
+    await api.post('/logout')
   } catch (error) {
-    console.log('El servidor cerró la sesión o el token ya había expirado');
+    console.log('Sesión cerrada localmente o expirada en el servidor.')
   } finally {
-    // Limpiamos absolutamente toda la memoria y regresamos al login
-    localStorage.clear()
+    authStore.logout() // Limpia el store y el localStorage
     router.push('/')
   }
 }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -13,7 +12,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string',
-            'email' => 'required|email|unique:usuarios,email',
+            'email' => 'required|email|unique:users,email', // Apunta a 'users' en lugar de 'usuarios'
             'password' => 'required|string|min:6',
             'rol' => 'required|in:docente,alumno'
         ]);
@@ -40,15 +39,19 @@ class AuthController extends Controller
 
         $usuario = User::where('email', $request->email)->first(); 
 
+        // Verificación segura que evita fallos de tipo y responde con JSON limpio
         if (! $usuario || ! Hash::check($request->password, $usuario->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['Las credenciales son incorrectas.'],
-            ]);
+            return response()->json([
+                'message' => 'Las credenciales son incorrectas.'
+            ], 422);
         }
 
         $token = $usuario->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['usuario' => $usuario, 'token' => $token], 200);
+        return response()->json([
+            'token' => $token,
+            'usuario' => $usuario
+        ], 200);
     }
 
     public function logout(Request $request)

@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Creamos una instancia configurada para apuntar a tu backend en Laravel
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api', // Puerto estándar de Laravel
+  baseURL: 'https://fluffy-goldfish-5g4gpg9rvj67c4qvg-8000.app.github.dev/api', // Puerto estándar de Laravel
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
