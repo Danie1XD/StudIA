@@ -3,31 +3,44 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AsignaturaController;
+use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\TareaController;
 use App\Http\Controllers\EntregaController;
+use App\Http\Controllers\ComentarioController;
 
-// --- Rutas Públicas (¡Imprescindibles para poder iniciar sesión!) ---
+// --- Rutas Públicas (Autenticación e Inicio de Sesión) ---
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-// --- Rutas Protegidas (Requieren token de sesión) ---
+// Rutas de autenticación con Google (Corregido con Route::get)
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+
+// --- Rutas Protegidas (Requieren token activo de Sanctum) ---
 Route::middleware('auth:sanctum')->group(function () {
-    
+   
+    // Usuario y Sesión
     Route::get('/user', function (Request $request) { return $request->user(); });
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // --- Módulo de Asignaturas ---
-    Route::get('/asignaturas', [AsignaturaController::class, 'index']);
-    Route::middleware('role:docente')->post('/asignaturas', [AsignaturaController::class, 'store']);
+    // --- Módulo de Materias (Gestión de Clases y Códigos) ---
+    Route::get('/materias', [MateriaController::class, 'index']);
+    Route::post('/materias', [MateriaController::class, 'store']);
+    Route::get('/materias/{id}', [MateriaController::class, 'show']);
+    Route::post('/materias/unirse', [MateriaController::class, 'unirse']);
 
-    // --- Módulo de Tareas ---
-    Route::get('/asignaturas/{asignatura_id}/tareas', [TareaController::class, 'index']);
-    Route::middleware('role:docente')->post('/tareas', [TareaController::class, 'store']);
+    // --- Módulo de Tareas (Publicación y Detalle) ---
+    Route::get('/tareas', [TareaController::class, 'misTareas']);
+    Route::post('/tareas', [TareaController::class, 'store']);
+    Route::get('/tareas/{id}', [TareaController::class, 'show']);
 
-    // --- Módulo de Entregas ---
-    Route::middleware('role:alumno')->post('/entregas', [EntregaController::class, 'store']);
-    Route::middleware('role:docente')->post('/entregas/{id}/evaluar', [EntregaController::class, 'evaluar']);
-    Route::middleware('role:docente')->post('/entregas/{id}/evaluar-ia', [EntregaController::class, 'solicitarEvaluacionIA']);
-    
+    // --- Módulo de Entregas y Pre-evaluación con Gemini AI ---
+    Route::post('/entregas', [EntregaController::class, 'store']); 
+    Route::post('/entregas/{id}/evaluar-ia', [EntregaController::class, 'evaluarIA']); 
+    Route::post('/entregas/{id}/calificar', [EntregaController::class, 'guardarEvaluacion']); 
+    Route::delete('/entregas/{id}', [EntregaController::class, 'destroy']);
+
+    // --- Módulo de Comentarios Privados ---
+    Route::post('/comentarios', [ComentarioController::class, 'store']);
+
 });

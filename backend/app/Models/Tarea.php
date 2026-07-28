@@ -2,19 +2,36 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Tarea extends Model
 {
-    protected $connection = 'mongodb';
-    protected $collection = 'tareas';
+    use HasFactory;
 
     protected $fillable = [
-        'asignatura_id',
+        'materia_id',
         'titulo',
         'descripcion',
-        'fecha_entrega_limite',
-        'rubrica', // Objeto embebido / arreglo
-        'estado'
+        'archivo_pdf',
+        'fecha_limite',
+        'puntaje_maximo',
     ];
+
+    // Relación: Una tarea pertenece a una Materia
+    public function materia()
+    {
+        return $this->belongsTo(Materia::class);
+    }
+
+    // Relación: Una tarea recibe muchas Entregas (una por alumno)
+    public function entregas()
+    {
+        return $this->hasMany(Entrega::class);
+    }
+
+    public function comentarios()
+    {
+        return $this->hasMany(Comentario::class);
+    }
 }

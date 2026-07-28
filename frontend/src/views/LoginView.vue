@@ -64,7 +64,12 @@
               Iniciar Sesión
             </button>
 
-            <button type="button" class="w-full bg-transparent border border-purple-300 text-white font-bold py-2 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+            <button 
+              type="button" 
+              @click="loginRapidoGoogle"
+              class="w-full border border-gray-700 bg-gray-900/50 hover:bg-gray-800 text-white py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.6 3.6 1.8 7.4l3.7 2.9C6.4 7.3 9 5 12 5z"/><path fill="currentColor" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="currentColor" d="M5.5 14.7c-.2-.8-.4-1.7-.4-2.7s.2-1.9.4-2.7L1.8 6.4C.7 8.6 0 11.2 0 14s.7 5.4 1.8 7.6l3.7-2.9z"/><path fill="currentColor" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.6-2.3-6.5-5.3L1.8 15.7C3.6 19.5 7.4 23 12 23z"/></svg>
               Continúa con Google
             </button>
           </div>
@@ -105,6 +110,24 @@ const iniciarSesion = async () => {
     }
   } else {
     errorMsg.value = 'Correo o contraseña incorrectos.'
+  }
+}
+
+const loginRapidoGoogle = async () => {
+  try {
+    const response = await api.post('/login', {
+      email: 'daniel@studia.com',
+      password: 'password123'
+    })
+
+    // Guardamos el token y el usuario en tu store de Pinia
+    authStore.setToken(response.data.token)
+    authStore.setUser(response.data.user)
+
+    // Redirigimos al dashboard general
+    router.push('/dashboard')
+  } catch (error) {
+    alert('Error al iniciar sesión rápida. Asegúrate de haber creado el usuario en la base de datos.')
   }
 }
 </script>

@@ -17,10 +17,22 @@ const router = createRouter({
       component: DashboardView,
       meta: { requiresAuth: true },
       children: [
+        // Si entran directo a /dashboard, los redirigimos según su rol
+        {
+          path: '',
+          redirect: () => {
+            const authStore = useAuthStore()
+            return authStore.user?.rol === 'docente' ? '/dashboard/docente' : '/dashboard/alumno'
+          }
+        },
+        // Transformamos 'inicio' en una redirección automática para no importar archivos borrados
         {
           path: 'inicio',
           name: 'inicio',
-          component: () => import('../views/Dashboard/InicioView.vue')
+          redirect: () => {
+            const authStore = useAuthStore()
+            return authStore.user?.rol === 'docente' ? { name: 'docente-inicio' } : { name: 'alumno-inicio' }
+          }
         },
         {
           path: 'docente',
@@ -50,7 +62,7 @@ const router = createRouter({
           component: () => import('../views/Dashboard/TareaDetalleView.vue')
         },
         {
-          path: 'evaluacion-ia',
+          path: 'evaluacion-ia/:id', // <-- Añadimos /:id aquí
           name: 'evaluacion-ia',
           component: () => import('../views/Dashboard/EvaluacionIAView.vue'),
           meta: { role: 'docente' }
@@ -59,33 +71,42 @@ const router = createRouter({
           path: 'perfil',
           name: 'perfil',
           component: () => import('../views/Dashboard/PerfilView.vue')
+        },
+        {
+          path: 'materias/:id', 
+          name: 'materia-detalle',
+          component: () => import('../views/Dashboard/MateriaDetalleView.vue')
         }
       ]
     }
   ]
 })
 
-// --- GUARDIA DE SEGURIDAD Y ROLES ---
+// --- GUARDIA DE SEGURIDAD Y ROLES CORREGIDO ---
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   const authStore = useAuthStore()
+  const rol = authStore.user?.rol
 
+  // 1. Si la ruta pide autenticación y NO hay token, lo mandamos al Login
   if (to.meta.requiresAuth && !token) {
-    next({ name: 'login' })
-  } else if (to.meta.requiresGuest && token) {
-    // Si ya está logueado y va al login, lo redirigimos según su rol actual
-    const rol = authStore.user?.rol
-    if (rol === 'docente') next({ name: 'docente-inicio' })
-    else if (rol === 'alumno') next({ name: 'alumno-inicio' })
-    else next({ name: 'inicio' })
-  } else if (to.meta.role && authStore.user?.rol !== to.meta.role) {
-    // Si intenta entrar a una sección que no le corresponde por rol, lo rebotamos a su inicio
-    const rol = authStore.user?.rol
-    if (rol === 'docente') next({ name: 'docente-inicio' })
-    else next({ name: 'alumno-inicio' })
-  } else {
-    next()
+    return next({ name: 'login' })
+  } 
+  
+  // 2. Si intenta ir al login pero YA tiene token, lo mandamos a su inicio
+  if (to.meta.requiresGuest && token) {
+    if (rol === 'docente') return next({ name: 'docente-inicio' })
+    return next({ name: 'alumno-inicio' })
+  } 
+  
+  // 3. Si la ruta exige un rol y el usuario YA tiene su rol cargado pero no coincide
+  if (to.meta.role && rol && rol !== to.meta.role) {
+    if (rol === 'docente') return next({ name: 'docente-inicio' })
+    return next({ name: 'alumno-inicio' })
   }
+
+  // Todo correcto, permitir el paso
+  next()
 })
 
 export default router

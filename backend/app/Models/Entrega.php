@@ -2,20 +2,34 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Entrega extends Model
 {
-    protected $connection = 'mongodb';
-    protected $collection = 'entregas';
+    use HasFactory;
 
     protected $fillable = [
         'tarea_id',
-        'alumno_id',
+        'user_id',
+        'contenido',
         'archivo_url',
-        'fecha_envio',
+        'calificacion_ia',
+        'retroalimentacion_ia',
+        'calificacion_final',
+        'retroalimentacion_final',
         'estado',
-        'pre_evaluacion_ia', // Objeto embebido con JSON de Gemini
-        'revision_docente'   // Objeto embebido con validación humana
     ];
+
+    // Relación: Una entrega pertenece a una Tarea específica
+    public function tarea()
+    {
+        return $this->belongsTo(Tarea::class);
+    }
+
+    // Relación: Una entrega fue realizada por un Alumno
+    public function alumno()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
