@@ -43,4 +43,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Módulo de Comentarios Privados ---
     Route::post('/comentarios', [ComentarioController::class, 'store']);
 
+    Route::put('/user/profile', function (Request $request) {
+    $user = $request->user();
+    $user->update($request->only('nombre', 'email'));
+    return response()->json(['message' => 'Actualizado', 'user' => $user]);
+    });
 });

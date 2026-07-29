@@ -1,8 +1,31 @@
 <template>
+  <!-- ESTADO: CARGANDO -->
   <div v-if="cargando" class="text-center py-16 text-gray-400 text-sm">
     Cargando datos de la entrega...
   </div>
 
+  <!-- ESTADO: NO HAY ID EN LA URL (Entrada directa desde el menú) -->
+  <div v-else-if="!route.params.id" class="max-w-4xl mx-auto py-12 px-4">
+    <div class="bg-studia-card p-10 rounded-2xl border border-gray-800 text-center space-y-6 shadow-xl">
+      <div class="w-16 h-16 rounded-full bg-purple-900/30 border border-purple-500/40 flex items-center justify-center text-purple-400 mx-auto">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+      </div>
+      <div class="space-y-2 max-w-md mx-auto">
+        <h2 class="text-2xl font-bold text-white">Módulo de Evaluación Inteligente</h2>
+        <p class="text-xs text-gray-400 leading-relaxed">
+          Para realizar una pre-evaluación con Gemini AI, debes seleccionar una entrega específica desde la sección de gestión de tareas o materias.
+        </p>
+      </div>
+      <router-link 
+        to="/dashboard/tareas" 
+        class="inline-block bg-studia-purple hover:bg-purple-600 text-white font-extrabold px-6 py-3 rounded-xl shadow-lg transition-all text-xs cursor-pointer"
+      >
+        Ir a Gestión de Tareas
+      </router-link>
+    </div>
+  </div>
+
+  <!-- ESTADO: NO SE ENCONTRÓ LA ENTREGA -->
   <div v-else-if="!entrega" class="text-center py-16 text-red-400 text-sm">
     No se encontró la información de esta entrega.
   </div>
@@ -235,7 +258,7 @@ const route = useRoute()
 const router = useRouter()
 
 const entrega = ref(null)
-const cargando = ref(true)
+const cargando = ref(false) // Cambiado a false por defecto para evitar parpadeos si no hay ID
 const evaluando = ref(false)
 const publicando = ref(false)
 
@@ -275,10 +298,11 @@ const porcentajeScore = computed(() => {
 
 // 2. Cargar datos reales de la entrega desde el servidor
 const cargarEntrega = async () => {
+  // Validación de seguridad por si se llama sin ID
+  if (!route.params.id) return
+
   cargando.value = true
   try {
-    // Reutilizamos el endpoint de TareaDetalle pero filtrando la entrega en memoria o con endpoint directo
-    // Para simplificar y hacerlo seguro, obtenemos la materia/tarea donde está esta entrega
     const resTarea = await api.get('/tareas')
     let entregaEncontrada = null
     
@@ -302,7 +326,6 @@ const cargarEntrega = async () => {
 
     // Como respaldo final directo
     if (!entregaEncontrada) {
-      // Hacemos una búsqueda directa en las tareas del profesor
       const misTareas = await api.get('/tareas')
       for (const t of misTareas.data) {
         const detalle = await api.get(`/tareas/${t.id}`)
@@ -317,7 +340,6 @@ const cargarEntrega = async () => {
     if (entregaEncontrada) {
       entrega.value = entregaEncontrada
       
-      // Si ya hay evaluación final o de IA, llenamos el formulario del profesor
       if (entregaEncontrada.calificacion_final) {
         formFinal.value.calificacion_final = entregaEncontrada.calificacion_final
         formFinal.value.retroalimentacion_final = entregaEncontrada.retroalimentacion_final
@@ -346,7 +368,6 @@ const solicitarEvaluacionIA = async () => {
     const res = await api.post(`/entregas/${entrega.value.id}/evaluar-ia`)
     entrega.value = res.data.entrega
     
-    // Al recibir respuesta, llenamos los cuadros del docente al instante
     setTimeout(() => {
       prellenarFormularioConIA()
     }, 100)
@@ -372,5 +393,10 @@ const publicarCalificacion = async () => {
   }
 }
 
-onMounted(() => { cargarEntrega() })
+onMounted(() => {
+  // Solo disparamos la carga si la URL incluye un ID válido
+  if (route.params.id) {
+    cargarEntrega()
+  }
+})
 </script>

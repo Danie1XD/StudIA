@@ -62,7 +62,7 @@ const router = createRouter({
           component: () => import('../views/Dashboard/TareaDetalleView.vue')
         },
         {
-          path: 'evaluacion-ia/:id', // <-- Añadimos /:id aquí
+          path: 'evaluacion-ia/:id?', // <-- El signo de interrogación hace que el ID sea opcional
           name: 'evaluacion-ia',
           component: () => import('../views/Dashboard/EvaluacionIAView.vue'),
           meta: { role: 'docente' }

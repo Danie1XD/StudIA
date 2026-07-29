@@ -50,10 +50,10 @@
         <div class="flex items-center gap-3 overflow-hidden">
           <div class="w-8 h-8 rounded-full bg-studia-purple flex items-center justify-center text-sm font-bold text-white shrink-0">
             <!-- Muestra la primera letra del nombre real -->
-            {{ authStore.user?.name ? authStore.user.name.charAt(0).toUpperCase() : 'U' }}
+            {{ (authStore.user?.nombre || authStore.user?.name) ? (authStore.user?.nombre || authStore.user?.name).charAt(0).toUpperCase() : 'U' }}
           </div>
           <div class="text-xs truncate">
-            <p class="font-bold text-white truncate">{{ authStore.user?.name || 'Usuario StudIA' }}</p>
+            <p class="font-bold text-white truncate">{{ authStore.user?.nombre || authStore.user?.name || 'Usuario StudIA' }}</p>
             <p class="text-gray-500 capitalize">{{ authStore.user?.rol || 'estudiante' }}</p>
           </div>
         </div>
