@@ -230,6 +230,7 @@
             </div>
           </div>
 
+          <!-- Botón para cancelar subir la evaluación -->
           <div class="flex justify-end gap-4 pt-4 border-t border-gray-800/80">
             <button type="button" @click="$router.back()" class="px-5 py-2.5 text-xs font-bold text-gray-400 hover:text-white transition-colors cursor-pointer">
               Cancelar

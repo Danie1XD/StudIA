@@ -9,7 +9,7 @@
         </p>
       </div>
 
-      <!-- Botón de acción condicionado por el rol en Pinia -->
+      <!-- Botón de acción condicionado por el rol -->
       <div>
         <button 
           v-if="esDocente" 

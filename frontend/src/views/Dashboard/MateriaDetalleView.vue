@@ -8,7 +8,6 @@
   </div>
 
   <div v-else class="space-y-6">
-    <!-- BANNER ESTILO CLASSROOM (Con degradado morado/azul de StudIA) -->
     <div class="relative rounded-2xl bg-gradient-to-r from-studia-purple via-purple-900 to-blue-900 p-8 text-white shadow-2xl overflow-hidden border border-purple-500/30">
       <div class="relative z-10 max-w-2xl">
         <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">{{ materia.nombre }}</h1>
@@ -17,6 +16,7 @@
           <span class="bg-black/40 px-3 py-1.5 rounded-full border border-white/10">
             🎓 Prof. {{ materia.docente?.nombre }}
           </span>
+          
           <!-- Código visible solo para el docente -->
           <span v-if="esDocente" @click="copiarCodigo" title="Clic para copiar" class="bg-studia-dark/80 hover:bg-studia-dark px-3 py-1.5 rounded-full border border-purple-400/50 cursor-pointer font-mono text-purple-300 transition-colors">
             🔑 Código: {{ materia.codigo_acceso }}

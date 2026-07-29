@@ -12,7 +12,7 @@
       </div>
     </div>
 
-    <!-- Estados de Carga y Vacío -->
+    <!-- Estados de Carga y dentro de las tareas -->
     <div v-if="cargando" class="text-center py-12 text-gray-400 text-sm">
       Cargando tareas de la base de datos...
     </div>

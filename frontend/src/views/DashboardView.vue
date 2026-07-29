@@ -103,4 +103,5 @@ const cerrarSesion = async () => {
     router.push('/')
   }
 }
+
 </script>

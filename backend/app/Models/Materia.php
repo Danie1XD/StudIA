@@ -16,13 +16,13 @@ class Materia extends Model
         'codigo_acceso',
     ];
 
-    // Relación: Una materia le pertenece a un Docente
+    // Relación: Una materia le pertenece a un Docente 
     public function docente()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relación: Una materia tiene muchos Alumnos inscritos
+    // Relación: Una materia tiene muchos Alumnos inscritos 
     public function alumnos()
     {
         return $this->belongsToMany(User::class, 'materia_user', 'materia_id', 'user_id')->withTimestamps();

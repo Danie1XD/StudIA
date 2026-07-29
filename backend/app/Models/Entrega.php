@@ -21,13 +21,13 @@ class Entrega extends Model
         'estado',
     ];
 
-    // Relación: Una entrega pertenece a una Tarea específica
+    // Relación: Una entrega pertenece a una Tarea específica 
     public function tarea()
     {
         return $this->belongsTo(Tarea::class);
     }
 
-    // Relación: Una entrega fue realizada por un Alumno
+    // Relación: Una entrega fue realizada por un Alumno 
     public function alumno()
     {
         return $this->belongsTo(User::class, 'user_id');

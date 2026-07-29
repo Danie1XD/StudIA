@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <!-- Módulos de Acceso Rápido para Alumnos -->
+    <!-- Módulos de Acceso Rápido para los Alumnos -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-studia-card p-6 rounded-xl border border-gray-800 shadow-md">
         <h2 class="text-lg font-bold text-white mb-2">Mis Materias y Tareas</h2>
