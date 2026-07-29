@@ -1,0 +1,2 @@
+# StudIA
+En este repositorio se desarrolla y documenta el proyecto escolar StudIA, una aplicación cuyo objetivo es apoyar a los docentes en la reducción de su carga de trabajo mediante la evaluación semiautomática de tareas y trabajos entregados por los estudiantes. Para ello, el sistema utiliza rúbricas ya establecidas, permitiendo realizar evaluaciones de forma más rápida, organizada y consistente.

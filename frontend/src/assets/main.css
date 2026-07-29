@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  /* Aquí definimos los colores de tu interfaz */
+  --color-studia-dark: #0f0f11;
+  --color-studia-card: #1a1a1d;
+  --color-studia-purple: #9333ea;
+  --color-studia-light: #f3f4f6;
+}
+
+body {
+  /* Aplicamos el fondo oscuro por defecto */
+  background-color: var(--color-studia-dark);
+  color: var(--color-studia-light);
+}
