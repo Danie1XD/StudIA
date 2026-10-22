@@ -1,0 +1,111 @@
+/* StudIA · tokens de diseño
+   Los nombres antiguos (--morado, --superficie…) se conservan para que todo el
+   proyecto herede el nuevo aspecto; los nuevos se añaden al final de cada bloque. */
+
+/* ---------- Tema OSCURO (predeterminado) ---------- */
+:root,
+:root[data-tema='oscuro'] {
+  color-scheme: dark;
+
+  --fondo: #0f0d18;
+  --superficie: #181526;
+  --superficie-alta: #1f1b33;
+  --campo-fondo: #13101f;
+  --borde: #2c2745;
+  --borde-campo: #6c6590;
+
+  --texto: #f0edfa;
+  --texto-suave: #a8a1c6;
+
+  --morado: #6a35f0;
+  --morado-fuerte: #5a28d8;
+  --morado-texto: #b9a0ff;
+  --morado-suave: rgba(155, 115, 255, 0.18);
+  --sobre-morado: #ffffff;
+  --foco: #b9a0ff;
+
+  --exito-fondo: #123428;
+  --exito-texto: #4cd6a0;
+  --error-fondo: #3a1822;
+  --error-texto: #ff8a9d;
+  --aviso-fondo: #3a2c10;
+  --aviso-texto: #f0b34a;
+  --info-fondo: #172a52;
+  --info-texto: #8fb0ff;
+
+  --sombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 14px 32px -16px rgba(0, 0, 0, 0.65);
+
+  /* Menú lateral y barra inferior */
+  --lateral: #0b0914;
+  --lateral-borde: #221d3a;
+  --lateral-activo: #6a35f0;
+  --lateral-activo-texto: #ffffff;
+
+  /* Un color por materia */
+.tono-0 { --h: #818cf8; } /* Morado */
+.tono-1 { --h: #4ade80; } /* Verde */
+.tono-2 { --h: #fbbf24; } /* Ámbar */
+.tono-3 { --h: #f472b6; } /* Rosa */
+.tono-4 { --h: #38bdf8; } /* Azul claro (¡Faltaba!) */
+.tono-5 { --h: #2dd4bf; } /* Naranja */
+.tono-6 { --h: #a3e635; } /* Lima */
+.tono-7 { --h: #FFFFFF; } /* Índigo */
+.tono-8 { --h: #f88787; } /* Rojo suave */
+.tono-9 { --h: #fb923c; } /* Turquesa */
+}
+
+/* ---------- Tema CLARO ---------- */
+:root[data-tema='claro'] {
+  color-scheme: light;
+
+  --fondo: #f4f2fa;
+  --superficie: #ffffff;
+  --superficie-alta: #f1edfb;
+  --campo-fondo: #fbfaff;
+  --borde: #e4e0f0;
+  --borde-campo: #8a83a3;
+
+  --texto: #1a1433;
+  --texto-suave: #5f5879;
+
+  --morado: #6a35f0;
+  --morado-fuerte: #5326cf;
+  --morado-texto: #5326cf;
+  --morado-suave: #ece5ff;
+  --sobre-morado: #ffffff;
+  --foco: #5326cf;
+
+  --exito-fondo: #e1f4ec;
+  --exito-texto: #0f6e4f;
+  --error-fondo: #fbe7eb;
+  --error-texto: #b3203a;
+  --aviso-fondo: #fbefd9;
+  --aviso-texto: #8a5200;
+  --info-fondo: #e3ebfd;
+  --info-texto: #2457d6;
+
+  --sombra: 0 1px 2px rgba(26, 20, 51, 0.05), 0 12px 28px -14px rgba(26, 20, 51, 0.18);
+
+  --lateral: #ffffff;
+  --lateral-borde: #e4e0f0;
+  --lateral-activo: #ece5ff;
+  --lateral-activo-texto: #5326cf;
+
+  --tono-0: #6a35f0;
+  --tono-1: #0e9f8e;
+  --tono-2: #d98a00;
+  --tono-3: #d6336c;
+}
+
+/* ---------- Lo que no cambia con el tema ---------- */
+:root {
+  --peligro: #d62d4a;
+  --peligro-fuerte: #b3203a;
+  --degradado-marca: linear-gradient(135deg, #7a47ff 0%, #4b1fc4 100%);
+  --sobre-marca: #ffffff;
+  --radio: 12px;
+  --radio-grande: 18px;
+  --fuente: 'Figtree', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  --fuente-titulo: 'Bricolage Grotesque', 'Figtree', 'Segoe UI', system-ui, sans-serif;
+  --curva: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
